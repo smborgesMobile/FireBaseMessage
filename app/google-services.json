@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "540579176277",
+    "firebase_url": "https://kotlinmessage-a14a2.firebaseio.com",
+    "project_id": "kotlinmessage-a14a2",
+    "storage_bucket": "kotlinmessage-a14a2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540579176277:android:5faa340b48520521",
+        "android_client_info": {
+          "package_name": "bootcamp.kotlin.udemy.com.kotlinmessage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540579176277-4j6odi6jjkjhvvnduf8n5cid0uh4l01s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0KToqJxakKOc3_ml1Je9VHDbpDVUeZ4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540579176277-4j6odi6jjkjhvvnduf8n5cid0uh4l01s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

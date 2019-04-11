@@ -4,6 +4,8 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -13,18 +15,38 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         register_button_register.setOnClickListener {
-            val email = email_edittext_register.text.toString()
-            val password = password_edittext_register.text.toString()
-
-            Log.d("MainActivity", "Email is: $email ")
-            Log.d("MainActivity", "Password is: $password")
+            performRegister()
         }
 
         already_have_account_text_view.setOnClickListener {
             // Launch the login activity
-            var intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
+    }
+
+    private fun performRegister() {
+        val email = email_edittext_register.text.toString()
+        val password = password_edittext_register.text.toString()
+
+        Log.d("sm.borges", "Email is: $email ")
+        Log.d("sm.borges", "Password is: $password")
+
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please enter text in email/pw", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).
+                addOnCompleteListener {
+            Log.d("sm.borges", "isSuccessful: ${it.isSuccessful}")
+            if (!it.isSuccessful) return@addOnCompleteListener
+            Log.d("sm.borges", "User is created: ${it.result.user.uid}")
+        }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Failed to create user ${it.message}",
+                            Toast.LENGTH_SHORT).show()
+                }
     }
 }
