@@ -16,7 +16,7 @@ import java.util.*
 
 class RegisterActivity : AppCompatActivity() {
 
-     val TAG: String = "RegisterActivity"
+    val TAG: String = "RegisterActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,6 +105,11 @@ class RegisterActivity : AppCompatActivity() {
         ref.setValue(user)
                 .addOnSuccessListener {
                     Log.d(TAG, "Finally we saved the user to Firebase Database")
+                    val intent = Intent(this, LatestMessageActivity::class.java)
+                    //Avoid the user use back key to user it without login
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+
                 }
                 .addOnFailureListener {
                     Log.d(TAG, "Failed to set value to database: ${it.message}")
@@ -112,4 +117,6 @@ class RegisterActivity : AppCompatActivity() {
     }
 }
 
-class User(val uid: String, val userName: String, val profileImageUrl: String)
+class User(val uid: String, val userName: String, val profileImageUrl: String) {
+    constructor() : this("", "", "")
+}
