@@ -1,9 +1,10 @@
-package bootcamp.kotlin.udemy.com.kotlinmessage
+package bootcamp.kotlin.udemy.com.kotlinmessage.registerlogin
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import bootcamp.kotlin.udemy.com.kotlinmessage.R
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
 

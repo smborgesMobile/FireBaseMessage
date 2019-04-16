@@ -1,4 +1,4 @@
-package bootcamp.kotlin.udemy.com.kotlinmessage
+package bootcamp.kotlin.udemy.com.kotlinmessage.registerlogin
 
 import android.app.Activity
 import android.content.Intent
@@ -8,6 +8,9 @@ import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import bootcamp.kotlin.udemy.com.kotlinmessage.R
+import bootcamp.kotlin.udemy.com.kotlinmessage.messages.LatestMessageActivity
+import bootcamp.kotlin.udemy.com.kotlinmessage.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -115,8 +118,4 @@ class RegisterActivity : AppCompatActivity() {
                     Log.d(TAG, "Failed to set value to database: ${it.message}")
                 }
     }
-}
-
-class User(val uid: String, val userName: String, val profileImageUrl: String) {
-    constructor() : this("", "", "")
 }

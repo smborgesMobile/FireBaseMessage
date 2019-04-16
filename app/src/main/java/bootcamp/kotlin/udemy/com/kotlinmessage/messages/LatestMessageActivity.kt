@@ -1,10 +1,12 @@
-package bootcamp.kotlin.udemy.com.kotlinmessage
+package bootcamp.kotlin.udemy.com.kotlinmessage.messages
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import bootcamp.kotlin.udemy.com.kotlinmessage.R
+import bootcamp.kotlin.udemy.com.kotlinmessage.registerlogin.RegisterActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class LatestMessageActivity : AppCompatActivity() {
