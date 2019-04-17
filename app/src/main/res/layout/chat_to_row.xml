@@ -7,7 +7,7 @@
     android:layout_marginBottom="12dp">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView_chat_to_row"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -16,11 +16,11 @@
         android:maxWidth="240dp"
         android:padding="16dp"
         android:text="This is My Message. Wrap in multiple lines keep and going. It's so easy to work with firebase"
-        app:layout_constraintEnd_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="@+id/imageView2" />
+        app:layout_constraintEnd_toStartOf="@+id/imageview_to_row_item"
+        app:layout_constraintTop_toTopOf="@+id/imageview_to_row_item" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/imageview_to_row_item"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="8dp"
