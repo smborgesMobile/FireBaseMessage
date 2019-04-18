@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import bootcamp.kotlin.udemy.com.kotlinmessage.R
+import bootcamp.kotlin.udemy.com.kotlinmessage.R.id.imageview_to_row_item
 import bootcamp.kotlin.udemy.com.kotlinmessage.models.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
@@ -21,14 +20,15 @@ class ChatLogActivity : AppCompatActivity() {
 
     companion object {
         val TAG = "ChatLog"
+        var currentUser: User? = null
     }
-
     val adapter = GroupAdapter<ViewHolder>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
 
+        fetchCurrentUser()
         recyclerview_chat_log.adapter = adapter
 
         supportActionBar?.title = "Chat Log"
@@ -42,6 +42,22 @@ class ChatLogActivity : AppCompatActivity() {
             Log.d(TAG, "Attempt to send message ...")
             performSendMessage()
         }
+    }
+
+    private fun fetchCurrentUser() {
+        val uid = FirebaseAuth.getInstance().uid
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                currentUser = p0.getValue(User::class.java)
+                Log.d(TAG, "CurrentUser: ${currentUser?.userName}")
+            }
+
+        })
     }
 
     private fun listenerForMessages() {
@@ -64,9 +80,10 @@ class ChatLogActivity : AppCompatActivity() {
                 if (chatMessage != null) {
                     Log.d(TAG, chatMessage?.text)
                     if (chatMessage.fromId == FirebaseAuth.getInstance().uid) {
-                        adapter.add(ChaFromItem(chatMessage?.text))
+                        adapter.add(ChaFromItem(chatMessage?.text, currentUser as User))
                     } else {
-                        adapter.add(ChatToItem(chatMessage?.text))
+                        val toUser = intent.getParcelableExtra<User>(NewMessageActivity.USER_KEY)
+                        adapter.add(ChatToItem(chatMessage.text, toUser))
                     }
                 }
             }
@@ -103,9 +120,14 @@ class ChatLogActivity : AppCompatActivity() {
     }
 }
 
-class ChaFromItem(val text: String) : Item<ViewHolder>() {
+class ChaFromItem(val text: String, val user: User) : Item<ViewHolder>() {
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.itemView.textView_chat_from_row.text = text
+
+        //load our user image
+        val uri = user?.profileImageUrl
+        val target = viewHolder.itemView.imageview_from_row_item
+        Picasso.get().load(uri).into(target)
     }
 
     override fun getLayout(): Int {
@@ -113,9 +135,14 @@ class ChaFromItem(val text: String) : Item<ViewHolder>() {
     }
 }
 
-class ChatToItem(val text: String) : Item<ViewHolder>() {
+class ChatToItem(val text: String, val user: User) : Item<ViewHolder>() {
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.itemView.textView_chat_to_row.text = text
+
+        //load our user image
+        val uri = user?.profileImageUrl
+        val target = viewHolder.itemView.imageview_to_row_item
+        Picasso.get().load(uri).into(target)
     }
 
     override fun getLayout(): Int {
