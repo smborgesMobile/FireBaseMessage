@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import bootcamp.kotlin.udemy.com.kotlinmessage.R
 import bootcamp.kotlin.udemy.com.kotlinmessage.models.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -39,7 +40,9 @@ class NewMessageActivity : AppCompatActivity() {
                 p0.children.forEach {
                     val user = it.getValue(User::class.java)
                     if (user != null) {
-                        adapter.add(UserItem(user))
+                        if(user.uid != FirebaseAuth.getInstance().uid) {
+                            adapter.add(UserItem(user))
+                        }
                     }
                 }
 

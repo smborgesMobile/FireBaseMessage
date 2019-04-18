@@ -20,15 +20,12 @@ class ChatLogActivity : AppCompatActivity() {
 
     companion object {
         val TAG = "ChatLog"
-        var currentUser: User? = null
     }
     val adapter = GroupAdapter<ViewHolder>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
-
-        fetchCurrentUser()
         recyclerview_chat_log.adapter = adapter
 
         supportActionBar?.title = "Chat Log"
@@ -37,31 +34,19 @@ class ChatLogActivity : AppCompatActivity() {
         supportActionBar?.title = user.userName
 
         listenerForMessages()
-
         send_button.setOnClickListener {
             Log.d(TAG, "Attempt to send message ...")
-            performSendMessage()
+            Log.d("sm.borges", "sender text: ${editText_enter_message.text}")
+            if(!editText_enter_message.text.isEmpty())
+                performSendMessage()
         }
     }
 
-    private fun fetchCurrentUser() {
-        val uid = FirebaseAuth.getInstance().uid
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
-        ref.addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
-                currentUser = p0.getValue(User::class.java)
-                Log.d(TAG, "CurrentUser: ${currentUser?.userName}")
-            }
-
-        })
-    }
-
     private fun listenerForMessages() {
-        val reference = FirebaseDatabase.getInstance().getReference("/message")
+        val fromId = LatestMessageActivity.currentUser?.uid
+        val toId = intent.getParcelableExtra<User>(NewMessageActivity.USER_KEY)?.uid
+
+        val reference = FirebaseDatabase.getInstance().getReference("/user-message/$fromId/$toId")
 
         reference.addChildEventListener(object : ChildEventListener {
             override fun onChildRemoved(p0: DataSnapshot) {
@@ -80,11 +65,12 @@ class ChatLogActivity : AppCompatActivity() {
                 if (chatMessage != null) {
                     Log.d(TAG, chatMessage?.text)
                     if (chatMessage.fromId == FirebaseAuth.getInstance().uid) {
-                        adapter.add(ChaFromItem(chatMessage?.text, currentUser as User))
+                        adapter.add(ChaFromItem(chatMessage?.text, LatestMessageActivity.currentUser as User))
                     } else {
                         val toUser = intent.getParcelableExtra<User>(NewMessageActivity.USER_KEY)
                         adapter.add(ChatToItem(chatMessage.text, toUser))
                     }
+                    recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
                 }
             }
 
@@ -102,13 +88,15 @@ class ChatLogActivity : AppCompatActivity() {
 
         val text = editText_enter_message.text.toString()
         //Create field inside the data base
-        val reference = FirebaseDatabase.getInstance().getReference("/message").push()
+//        val reference = FirebaseDatabase.getInstance().getReference("/message").push()
 
         // get who is the current user
         val fromId = FirebaseAuth.getInstance().uid
-
         // get who is the end user
         val toId = intent.getParcelableExtra<User>(NewMessageActivity.USER_KEY).uid
+
+        val reference = FirebaseDatabase.getInstance().getReference("/user-message/$fromId/$toId").push()
+        val toReference = FirebaseDatabase.getInstance().getReference("/user-message/$toId/$fromId").push()
 
         val chatMessage = ChatMessage(reference.key!!, text, fromId!!, toId,
                 (System.currentTimeMillis() / 1000))
@@ -116,7 +104,15 @@ class ChatLogActivity : AppCompatActivity() {
         reference.setValue(chatMessage)
                 .addOnSuccessListener {
                     Log.d(TAG, "Save our chat message: ${reference.key}")
+                    editText_enter_message.text.clear()
+                    //Scroll to position
+                    recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
                 }
+
+        toReference.setValue(chatMessage).addOnSuccessListener {
+            //Scroll to position
+            recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
+        }
     }
 }
 

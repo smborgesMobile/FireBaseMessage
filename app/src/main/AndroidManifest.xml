@@ -31,7 +31,7 @@
         <activity android:name=".messages.ChatLogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".messages.LatestMessageActivity" />
+                android:value=".messages.NewMessageActivity" />
         </activity>
     </application>
 
