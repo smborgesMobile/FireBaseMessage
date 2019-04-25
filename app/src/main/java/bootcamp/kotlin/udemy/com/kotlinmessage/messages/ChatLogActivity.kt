@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import bootcamp.kotlin.udemy.com.kotlinmessage.R
-import bootcamp.kotlin.udemy.com.kotlinmessage.R.id.imageview_to_row_item
 import bootcamp.kotlin.udemy.com.kotlinmessage.models.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
@@ -21,6 +23,7 @@ class ChatLogActivity : AppCompatActivity() {
     companion object {
         val TAG = "ChatLog"
     }
+
     val adapter = GroupAdapter<ViewHolder>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +40,7 @@ class ChatLogActivity : AppCompatActivity() {
         send_button.setOnClickListener {
             Log.d(TAG, "Attempt to send message ...")
             Log.d("sm.borges", "sender text: ${editText_enter_message.text}")
-            if(!editText_enter_message.text.isEmpty())
+            if (!editText_enter_message.text.isEmpty())
                 performSendMessage()
         }
     }
@@ -113,6 +116,12 @@ class ChatLogActivity : AppCompatActivity() {
             //Scroll to position
             recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
         }
+
+        val latestMessageRef = FirebaseDatabase.getInstance().getReference("/latest-messages/$fromId/$toId")
+        latestMessageRef.setValue(chatMessage)
+
+        val latestMessageToRef = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId/$fromId")
+        latestMessageToRef.setValue(chatMessage)
     }
 }
 
