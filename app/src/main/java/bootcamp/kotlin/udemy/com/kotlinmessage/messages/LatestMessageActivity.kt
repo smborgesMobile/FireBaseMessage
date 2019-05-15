@@ -1,21 +1,21 @@
 package bootcamp.kotlin.udemy.com.kotlinmessage.messages
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import bootcamp.kotlin.udemy.com.kotlinmessage.R
 import bootcamp.kotlin.udemy.com.kotlinmessage.models.User
 import bootcamp.kotlin.udemy.com.kotlinmessage.registerlogin.RegisterActivity
+import bootcamp.kotlin.udemy.com.kotlinmessage.views.LatestMessageRow
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_latest_message.*
-import kotlinx.android.synthetic.main.latest_message_row.view.*
 
 class LatestMessageActivity : AppCompatActivity() {
 
@@ -23,13 +23,24 @@ class LatestMessageActivity : AppCompatActivity() {
 
     companion object {
         var currentUser: User? = null
+        val TAG = "LatestMessages"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_latest_message)
         recycler_view_latest_message.adapter = adapter
-//        setupDummyRows()
+        recycler_view_latest_message.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+
+        adapter.setOnItemClickListener { item, view ->
+            Log.d(TAG, "123")
+            val intent = Intent(this, ChatLogActivity::class.java)
+
+            val row = item as LatestMessageRow
+            intent.putExtra(NewMessageActivity.USER_KEY, row.chatPartnerUser)
+            startActivity(intent)
+        }
+
         listenForLatestMessages()
         verifyUserIsLoggedIn()
         fetchCurrentUser()
@@ -70,19 +81,8 @@ class LatestMessageActivity : AppCompatActivity() {
     private fun refreshRecyclerView() {
         adapter.clear()
         latestNessagesMap.values.forEach {
-            adapter.add(LatestMessage(it))
+            adapter.add(LatestMessageRow(it))
         }
-    }
-
-    class LatestMessage(val chatMessage: ChatLogActivity.ChatMessage) : Item<ViewHolder>() {
-        override fun bind(viewHolder: ViewHolder, position: Int) {
-            viewHolder.itemView.textView_latest_messages.text = chatMessage.text
-        }
-
-        override fun getLayout(): Int {
-            return R.layout.latest_message_row
-        }
-
     }
 
     private fun verifyUserIsLoggedIn() {

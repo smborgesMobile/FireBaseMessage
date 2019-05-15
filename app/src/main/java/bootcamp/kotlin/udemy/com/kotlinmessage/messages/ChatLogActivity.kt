@@ -5,18 +5,16 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import bootcamp.kotlin.udemy.com.kotlinmessage.R
 import bootcamp.kotlin.udemy.com.kotlinmessage.models.User
+import bootcamp.kotlin.udemy.com.kotlinmessage.views.ChaFromItem
+import bootcamp.kotlin.udemy.com.kotlinmessage.views.ChatToItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat_log.*
-import kotlinx.android.synthetic.main.chat_from_row.view.*
-import kotlinx.android.synthetic.main.chat_to_row.view.*
 
 class ChatLogActivity : AppCompatActivity() {
 
@@ -30,16 +28,16 @@ class ChatLogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
         recyclerview_chat_log.adapter = adapter
+        recyclerview_chat_log.hasFixedSize()
 
         supportActionBar?.title = "Chat Log"
 
         val user = intent.getParcelableExtra<User>(NewMessageActivity.USER_KEY)
-        supportActionBar?.title = user.userName
+        supportActionBar?.title = user?.userName
 
         listenerForMessages()
         send_button.setOnClickListener {
             Log.d(TAG, "Attempt to send message ...")
-            Log.d("sm.borges", "sender text: ${editText_enter_message.text}")
             if (!editText_enter_message.text.isEmpty())
                 performSendMessage()
         }
@@ -73,8 +71,8 @@ class ChatLogActivity : AppCompatActivity() {
                         val toUser = intent.getParcelableExtra<User>(NewMessageActivity.USER_KEY)
                         adapter.add(ChatToItem(chatMessage.text, toUser))
                     }
-                    recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
                 }
+                recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
             }
 
             override fun onCancelled(p0: DatabaseError) {
@@ -122,35 +120,5 @@ class ChatLogActivity : AppCompatActivity() {
 
         val latestMessageToRef = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId/$fromId")
         latestMessageToRef.setValue(chatMessage)
-    }
-}
-
-class ChaFromItem(val text: String, val user: User) : Item<ViewHolder>() {
-    override fun bind(viewHolder: ViewHolder, position: Int) {
-        viewHolder.itemView.textView_chat_from_row.text = text
-
-        //load our user image
-        val uri = user?.profileImageUrl
-        val target = viewHolder.itemView.imageview_from_row_item
-        Picasso.get().load(uri).into(target)
-    }
-
-    override fun getLayout(): Int {
-        return R.layout.chat_from_row
-    }
-}
-
-class ChatToItem(val text: String, val user: User) : Item<ViewHolder>() {
-    override fun bind(viewHolder: ViewHolder, position: Int) {
-        viewHolder.itemView.textView_chat_to_row.text = text
-
-        //load our user image
-        val uri = user?.profileImageUrl
-        val target = viewHolder.itemView.imageview_to_row_item
-        Picasso.get().load(uri).into(target)
-    }
-
-    override fun getLayout(): Int {
-        return R.layout.chat_to_row
     }
 }

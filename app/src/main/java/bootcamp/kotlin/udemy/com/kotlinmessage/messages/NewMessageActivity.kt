@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import bootcamp.kotlin.udemy.com.kotlinmessage.R
 import bootcamp.kotlin.udemy.com.kotlinmessage.models.User
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
@@ -70,7 +70,7 @@ class NewMessageActivity : AppCompatActivity() {
 class UserItem(val user: User) : Item<ViewHolder>() {
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.itemView.username_text_view.text = user.userName
-        Picasso.get().load(user.profileImageUrl).into(viewHolder.itemView.imageView)
+        Glide.with(viewHolder.itemView.context).load(user.profileImageUrl).into(viewHolder.itemView.imageView)
     }
 
     override fun getLayout(): Int {
